@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Profile & Regulars</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        h1, h2 { color: #333; }
+        label { display: block; margin-top: 12px; font-weight: bold; }
+        input { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+        button { margin-top: 12px; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .delete-btn { background: #c0392b; padding: 4px 10px; margin-top: 0; margin-left: 8px; }
+        .regular-item { display: flex; align-items: center; margin-top: 8px; }
+        a { color: #333; }
+        .section { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-top: 24px; }
+    </style>
+</head>
+<body>
+    <h1>⚙️ Manage Profile & Regulars</h1>
+    <a href="/">← Back</a>
+
+    <div class="section">
+        <h2>Your Profile</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="save_profile">
+            <label>Your Name</label>
+            <input type="text" name="profile_name" value="{{ profile.name }}" placeholder="e.g. Chris">
+            <button type="submit">Save</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Regulars</h2>
+        {% for r in regulars %}
+        <div class="regular-item">
+            <span>{{ r }}</span>
+            <form method="POST" style="display:inline;">
+                <input type="hidden" name="action" value="delete_regular">
+                <input type="hidden" name="delete_name" value="{{ r }}">
+                <button class="delete-btn" type="submit">Remove</button>
+            </form>
+        </div>
+        {% else %}
+            <p>No regulars yet.</p>
+        {% endfor %}
+
+        <form method="POST" style="margin-top: 16px;">
+            <input type="hidden" name="action" value="add_regular">
+            <label>Add a Regular</label>
+            <input type="text" name="regular_name" placeholder="e.g. Sarah">
+            <button type="submit">Add</button>
+        </form>
+    </div>
+</body>
+</html>

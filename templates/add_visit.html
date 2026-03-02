@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Visit</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: #333; }
+        label { display: block; margin-top: 12px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+        .cocktail-row { border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-top: 12px; }
+        button { margin-top: 16px; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .add-cocktail { background: #666; }
+        .new-regular { display: flex; gap: 8px; margin-top: 8px; }
+        .new-regular input { margin-top: 0; }
+        a { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>Add Visit</h1>
+    <a href="/">← Back</a>
+
+    <form method="POST">
+        <label>Bar / Restaurant</label>
+        <input type="text" name="bar_name" required>
+
+        <label>Location</label>
+        <input type="text" name="location" placeholder="e.g. Downtown Minneapolis">
+
+        <label>Date</label>
+        <input type="date" name="date" value="{{ today }}" required>
+
+        <h3>Cocktails</h3>
+        <div id="cocktails">
+            <div class="cocktail-row">
+                <label>Who ordered this?</label>
+                <select name="person">
+                    {% for p in people %}
+                    <option value="{{ p }}">{{ p }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Cocktail Name</label>
+                <input type="text" name="cocktail_name" placeholder="e.g. Old Fashioned">
+
+                <label>Overall Rating (1-5)</label>
+                <select name="rating">
+                    <option>1</option><option>2</option><option>3</option>
+                    <option>4</option><option selected>5</option>
+                </select>
+
+                <label>Ice Quality</label>
+                <select name="ice_quality">
+                    <option>Big clear cube</option>
+                    <option>Standard cube</option>
+                    <option>Crushed</option>
+                    <option>No ice</option>
+                    <option>Other</option>
+                </select>
+
+                <label>Taste/Balance (1-5)</label>
+                <select name="taste_balance">
+                    <option>1</option><option>2</option><option>3</option>
+                    <option>4</option><option selected>5</option>
+                </select>
+
+                <label>Notes</label>
+                <textarea name="notes" rows="2" placeholder="e.g. Creamy, well balanced, great presentation"></textarea>
+            </div>
+        </div>
+
+        <button type="button" class="add-cocktail" onclick="addCocktail()">+ Add Another Cocktail</button>
+
+        <h3>Add a New Regular (optional)</h3>
+        <div class="new-regular">
+            <input type="text" name="new_regular" placeholder="e.g. John">
+        </div>
+
+        <br>
+        <button type="submit">Save Visit</button>
+    </form>
+
+    <script>
+        const peopleOptions = `{% for p in people %}<option value="{{ p }}">{{ p }}</option>{% endfor %}`;
+
+        function addCocktail() {
+            const container = document.getElementById("cocktails");
+            const first = container.querySelector(".cocktail-row");
+            const clone = first.cloneNode(true);
+            clone.querySelectorAll("input, textarea").forEach(el => el.value = "");
+            clone.querySelector("select[name='person']").innerHTML = peopleOptions;
+            container.appendChild(clone);
+        }
+    </script>
+</body>
+</html>

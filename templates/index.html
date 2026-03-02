@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cocktail Tracker</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: #333; }
+        nav { margin-bottom: 24px; }
+        nav a { margin-right: 16px; color: #333; text-decoration: none; font-weight: bold; }
+        .visit { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+        .visit h2 { margin: 0 0 4px; }
+        .visit .meta { color: #888; font-size: 0.9em; margin-bottom: 12px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; border-bottom: 2px solid #ddd; padding: 6px; }
+        td { padding: 6px; border-bottom: 1px solid #eee; }
+        .rating { font-weight: bold; }
+        .add-btn { display: inline-block; background: #333; color: white; padding: 10px 20px;
+                   text-decoration: none; border-radius: 6px; margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <h1>🍹 Cocktail Tracker</h1>
+    <nav>
+        <a href="/add">+ Add Visit</a>
+        <a href="/manage">Manage Profile & Regulars</a>
+    </nav>
+
+    {% if visits %}
+        {% for visit in visits %}
+        <div class="visit">
+            <h2>{{ visit.bar_name }}</h2>
+            <div class="meta">{{ visit.location }} &bull; {{ visit.date }}</div>
+            <table>
+                <tr>
+                    <th>Person</th>
+                    <th>Cocktail</th>
+                    <th>Rating</th>
+                    <th>Ice</th>
+                    <th>Taste/Balance</th>
+                    <th>Notes</th>
+                </tr>
+                {% for c in visit.cocktails %}
+                <tr>
+                    <td>{{ c.person }}</td>
+                    <td>{{ c.name }}</td>
+                    <td class="rating">{{ c.rating }}/5</td>
+                    <td>{{ c.ice_quality }}</td>
+                    <td>{{ c.taste_balance }}/5</td>
+                    <td>{{ c.notes }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No visits yet. Add your first one!</p>
+    {% endif %}
+</body>
+</html>
