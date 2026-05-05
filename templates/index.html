@@ -1,55 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Call Me Old Fashioned</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        h1 { color: #333; }
-        nav { margin-bottom: 24px; }
-        nav a { margin-right: 16px; color: #333; text-decoration: none; font-weight: bold; }
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; max-width: 860px; margin: 0 auto; padding: 20px 16px; }
+        h1 { color: #333; font-size: 1.6rem; margin-bottom: 8px; }
+        nav { margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        nav a { color: #333; text-decoration: none; font-weight: bold; white-space: nowrap; }
+        .add-btn { background: #333; color: white !important; padding: 8px 16px; border-radius: 6px; }
         .visit { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
-        .visit h2 { margin: 0 0 4px; }
+        .visit-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+        .visit h2 { margin: 0 0 4px; font-size: 1.2rem; }
         .visit .meta { color: #888; font-size: 0.9em; margin-bottom: 12px; }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; border-bottom: 2px solid #ddd; padding: 6px; }
-        td { padding: 6px; border-bottom: 1px solid #eee; }
+        .visit-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .visit-actions a, .visit-actions button {
+            font-size: 0.8rem; padding: 4px 10px; border-radius: 4px;
+            text-decoration: none; border: none; cursor: pointer; font-family: Arial, sans-serif;
+        }
+        .edit-btn { background: #eee; color: #333; }
+        .delete-btn { background: #c0392b; color: white; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 480px; }
+        th { text-align: left; border-bottom: 2px solid #ddd; padding: 6px 8px; font-size: 0.85rem; white-space: nowrap; }
+        td { padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: top; }
         .rating { font-weight: bold; }
-        .add-btn { display: inline-block; background: #333; color: white; padding: 10px 20px;
-                   text-decoration: none; border-radius: 6px; margin-bottom: 24px; }
+        @media (max-width: 500px) {
+            h1 { font-size: 1.3rem; }
+            .visit h2 { font-size: 1rem; }
+        }
     </style>
 </head>
 <body>
     <h1>🍹 Call Me Old Fashioned</h1>
     <nav>
-        <a href="/add">+ Add Visit</a>
+        <a href="/add" class="add-btn">+ Add Visit</a>
+        <a href="/stats">Stats</a>
         <a href="/manage">Manage Profile & Regulars</a>
     </nav>
 
     {% if visits %}
         {% for visit in visits %}
         <div class="visit">
-            <h2>{{ visit.bar_name }}</h2>
-            <div class="meta">{{ visit.location }} &bull; {{ visit.date }}</div>
-            <table>
-                <tr>
-                    <th>Person</th>
-                    <th>Cocktail</th>
-                    <th>Rating</th>
-                    <th>Ice</th>
-                    <th>Taste/Balance</th>
-                    <th>Notes</th>
-                </tr>
-                {% for c in visit.cocktails %}
-                <tr>
-                    <td>{{ c.person }}</td>
-                    <td>{{ c.name }}</td>
-                    <td class="rating">{{ c.rating }}/5</td>
-                    <td>{{ c.ice_quality }}</td>
-                    <td>{{ c.taste_balance }}/5</td>
-                    <td>{{ c.notes }}</td>
-                </tr>
-                {% endfor %}
-            </table>
+            <div class="visit-header">
+                <div>
+                    <h2>{{ visit.bar_name }}</h2>
+                    <div class="meta">{{ visit.location }} &bull; {{ visit.date }}</div>
+                </div>
+                <div class="visit-actions">
+                    <a href="/edit/{{ visit.visit_id }}" class="edit-btn">Edit</a>
+                    <form method="POST" action="/delete/{{ visit.visit_id }}" onsubmit="return confirm('Delete this visit?')">
+                        <button type="submit" class="delete-btn">Delete</button>
+                    </form>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <tr>
+                        <th>Person</th>
+                        <th>Cocktail</th>
+                        <th>Rating</th>
+                        <th>Ice</th>
+                        <th>Balance</th>
+                        <th>Notes</th>
+                    </tr>
+                    {% for c in visit.cocktails %}
+                    <tr>
+                        <td>{{ c.person }}</td>
+                        <td>{{ c.name }}</td>
+                        <td class="rating">{{ c.rating }}/5</td>
+                        <td>{{ c.ice_quality }}</td>
+                        <td>{{ c.taste_balance }}/5</td>
+                        <td>{{ c.notes }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
         {% endfor %}
     {% else %}

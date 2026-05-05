@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Call Me Old Fashioned - Add Visit</title>
+    <title>Call Me Old Fashioned - Edit Visit</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px 16px; }
@@ -27,12 +27,12 @@
     </style>
 </head>
 <body>
-    <h1>Add Visit</h1>
+    <h1>Edit Visit</h1>
     <a href="/">← Back</a>
 
     <form method="POST">
         <label>Bar / Restaurant</label>
-        <input type="text" name="bar_name" required list="bar-suggestions" autocomplete="off">
+        <input type="text" name="bar_name" required list="bar-suggestions" autocomplete="off" value="{{ visit.bar_name }}">
         <datalist id="bar-suggestions">
             {% for b in bar_names %}
             <option value="{{ b }}">
@@ -40,50 +40,55 @@
         </datalist>
 
         <label>Location</label>
-        <input type="text" name="location" placeholder="e.g. Downtown Minneapolis">
+        <input type="text" name="location" value="{{ visit.location }}">
 
         <label>Date</label>
-        <input type="date" name="date" value="{{ today }}" required>
+        <input type="date" name="date" value="{{ visit.date }}" required>
 
         <h3>Cocktails</h3>
         <div id="cocktails">
+            {% for c in visit.cocktails %}
             <div class="cocktail-row">
-                <button type="button" class="remove-cocktail" onclick="removeCocktail(this)" title="Remove" style="display:none">&times;</button>
+                <button type="button" class="remove-cocktail" onclick="removeCocktail(this)" title="Remove"{% if loop.first %} style="display:none"{% endif %}>&times;</button>
 
                 <label>Who ordered this?</label>
                 <select name="person">
                     {% for p in people %}
-                    <option value="{{ p }}">{{ p }}</option>
+                    <option value="{{ p }}"{% if p == c.person %} selected{% endif %}>{{ p }}</option>
                     {% endfor %}
+                    {% if c.person and c.person not in people %}
+                    <option value="{{ c.person }}" selected>{{ c.person }}</option>
+                    {% endif %}
                 </select>
 
                 <label>Cocktail Name</label>
-                <input type="text" name="cocktail_name" placeholder="e.g. Old Fashioned">
+                <input type="text" name="cocktail_name" value="{{ c.name }}">
 
                 <label>Overall Rating (1–5)</label>
                 <select name="rating">
-                    <option>1</option><option>2</option><option>3</option>
-                    <option>4</option><option selected>5</option>
+                    {% for n in [1,2,3,4,5] %}
+                    <option{% if c.rating == n|string %} selected{% endif %}>{{ n }}</option>
+                    {% endfor %}
                 </select>
 
                 <label>Ice Quality</label>
                 <select name="ice_quality">
-                    <option>Big clear cube</option>
-                    <option>Standard cube</option>
-                    <option>Crushed</option>
-                    <option>No ice</option>
-                    <option>Other</option>
+                    {% for opt in ["Big clear cube", "Standard cube", "Crushed", "No ice", "Other"] %}
+                    <option{% if c.ice_quality == opt %} selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
                 </select>
 
                 <label>Taste / Balance (1–5)</label>
                 <select name="taste_balance">
-                    <option>1</option><option>2</option><option>3</option>
-                    <option>4</option><option selected>5</option>
+                    {% for n in [1,2,3,4,5] %}
+                    <option{% if c.taste_balance == n|string %} selected{% endif %}>{{ n }}</option>
+                    {% endfor %}
                 </select>
 
                 <label>Notes</label>
-                <textarea name="notes" rows="2" placeholder="e.g. Creamy, well balanced, great presentation"></textarea>
+                <textarea name="notes" rows="2">{{ c.notes }}</textarea>
             </div>
+            {% endfor %}
         </div>
 
         <div class="actions">
@@ -91,7 +96,7 @@
         </div>
 
         <div class="actions">
-            <button type="submit" class="btn btn-dark">Save Visit</button>
+            <button type="submit" class="btn btn-dark">Save Changes</button>
             <a href="/" class="btn btn-outline">Cancel</a>
         </div>
     </form>
@@ -100,8 +105,8 @@
         const peopleOptions = `{% for p in people %}<option value="{{ p }}">{{ p }}</option>{% endfor %}`;
 
         function buildRow() {
-            const first = document.querySelector(".cocktail-row");
-            const clone = first.cloneNode(true);
+            const rows = document.querySelectorAll(".cocktail-row");
+            const clone = rows[0].cloneNode(true);
             clone.querySelectorAll("input, textarea").forEach(el => el.value = "");
             clone.querySelector("select[name='person']").innerHTML = peopleOptions;
             clone.querySelector("select[name='rating']").value = "5";
@@ -116,7 +121,9 @@
         }
 
         function removeCocktail(btn) {
-            btn.closest(".cocktail-row").remove();
+            if (document.querySelectorAll(".cocktail-row").length > 1) {
+                btn.closest(".cocktail-row").remove();
+            }
         }
     </script>
 </body>

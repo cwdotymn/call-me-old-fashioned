@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Call Me Old Fashioned - Manage Profile & Regulars</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
-        h1, h2 { color: #333; }
-        label { display: block; margin-top: 12px; font-weight: bold; }
-        input { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
-        button { margin-top: 12px; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; }
-        .delete-btn { background: #c0392b; padding: 4px 10px; margin-top: 0; margin-left: 8px; }
-        .regular-item { display: flex; align-items: center; margin-top: 8px; }
-        a { color: #333; }
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px 16px; }
+        h1 { color: #333; font-size: 1.4rem; }
+        h2 { color: #333; font-size: 1.1rem; margin: 0 0 12px; }
+        label { display: block; margin-top: 12px; font-weight: bold; font-size: 0.95rem; }
+        input {
+            width: 100%; padding: 10px 8px; margin-top: 4px;
+            border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; font-family: Arial, sans-serif;
+        }
+        .btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-size: 1rem; font-family: Arial, sans-serif; }
+        .btn-dark { background: #333; color: white; margin-top: 12px; }
+        .btn-delete { background: #c0392b; color: white; padding: 5px 12px; font-size: 0.85rem; margin: 0; }
         .section { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-top: 24px; }
+        .regular-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .regular-item:last-of-type { border-bottom: none; }
+        a { color: #333; }
+        .empty { color: #aaa; font-style: italic; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -24,7 +34,7 @@
             <input type="hidden" name="action" value="save_profile">
             <label>Your Name</label>
             <input type="text" name="profile_name" value="{{ profile.name }}" placeholder="e.g. Chris">
-            <button type="submit">Save</button>
+            <button type="submit" class="btn btn-dark">Save</button>
         </form>
     </div>
 
@@ -33,21 +43,21 @@
         {% for r in regulars %}
         <div class="regular-item">
             <span>{{ r }}</span>
-            <form method="POST" style="display:inline;">
+            <form method="POST" onsubmit="return confirm('Remove {{ r }}?')">
                 <input type="hidden" name="action" value="delete_regular">
                 <input type="hidden" name="delete_name" value="{{ r }}">
-                <button class="delete-btn" type="submit">Remove</button>
+                <button class="btn btn-delete" type="submit">Remove</button>
             </form>
         </div>
         {% else %}
-            <p>No regulars yet.</p>
+        <p class="empty">No regulars yet.</p>
         {% endfor %}
 
         <form method="POST" style="margin-top: 16px;">
             <input type="hidden" name="action" value="add_regular">
             <label>Add a Regular</label>
             <input type="text" name="regular_name" placeholder="e.g. Sarah">
-            <button type="submit">Add</button>
+            <button type="submit" class="btn btn-dark">Add</button>
         </form>
     </div>
 </body>

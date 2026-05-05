@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Call Me Old Fashioned - Stats</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; max-width: 860px; margin: 0 auto; padding: 20px 16px; }
+        h1 { color: #333; font-size: 1.6rem; margin-bottom: 4px; }
+        h2 { color: #333; font-size: 1.1rem; margin: 0 0 12px; }
+        a { color: #333; }
+        .summary { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0; }
+        .stat-box { border: 1px solid #ddd; border-radius: 8px; padding: 16px 20px; min-width: 120px; text-align: center; }
+        .stat-box .number { font-size: 2rem; font-weight: bold; color: #333; }
+        .stat-box .label { font-size: 0.85rem; color: #888; margin-top: 4px; }
+        .section { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; border-bottom: 2px solid #ddd; padding: 6px 8px; font-size: 0.85rem; }
+        td { padding: 7px 8px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        .bar-fill-wrap { background: #eee; border-radius: 4px; height: 10px; min-width: 60px; }
+        .bar-fill { background: #333; border-radius: 4px; height: 10px; }
+        .dist-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.9rem; }
+        .dist-label { width: 24px; text-align: right; color: #555; }
+        .dist-count { color: #888; font-size: 0.8rem; min-width: 24px; }
+        .empty { color: #aaa; font-style: italic; font-size: 0.9rem; }
+        @media (max-width: 500px) {
+            h1 { font-size: 1.3rem; }
+            .stat-box .number { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Stats</h1>
+    <a href="/">← Back</a>
+
+    <div class="summary">
+        <div class="stat-box">
+            <div class="number">{{ total_visits }}</div>
+            <div class="label">Visits</div>
+        </div>
+        <div class="stat-box">
+            <div class="number">{{ total_cocktails }}</div>
+            <div class="label">Cocktails</div>
+        </div>
+        <div class="stat-box">
+            <div class="number">{{ top_bars | length }}</div>
+            <div class="label">Bars</div>
+        </div>
+    </div>
+
+    {% if total_visits == 0 %}
+        <p class="empty">No data yet. Add some visits to see stats.</p>
+    {% else %}
+
+    <div class="section">
+        <h2>Top Rated Bars</h2>
+        {% if top_bars %}
+        <table>
+            <tr><th>Bar</th><th>Avg Rating</th><th>Visits</th></tr>
+            {% for b in top_bars %}
+            <tr>
+                <td>{{ b.name }}</td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div class="bar-fill-wrap" style="width:80px">
+                            <div class="bar-fill" style="width:{{ (b.avg_rating / 5 * 100) | int }}%"></div>
+                        </div>
+                        {{ b.avg_rating }}/5
+                    </div>
+                </td>
+                <td>{{ b.visits }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="empty">No data yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Most Visited Bars</h2>
+        {% if most_visited %}
+        <table>
+            <tr><th>Bar</th><th>Visits</th><th>Avg Rating</th></tr>
+            {% for b in most_visited %}
+            <tr>
+                <td>{{ b.name }}</td>
+                <td>{{ b.visits }}</td>
+                <td>{{ b.avg_rating }}/5</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="empty">No data yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Top Rated Cocktails</h2>
+        {% if top_cocktails %}
+        <table>
+            <tr><th>Cocktail</th><th>Avg Rating</th><th>Times Ordered</th></tr>
+            {% for c in top_cocktails %}
+            <tr>
+                <td>{{ c.name }}</td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div class="bar-fill-wrap" style="width:80px">
+                            <div class="bar-fill" style="width:{{ (c.avg_rating / 5 * 100) | int }}%"></div>
+                        </div>
+                        {{ c.avg_rating }}/5
+                    </div>
+                </td>
+                <td>{{ c.count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="empty">No data yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Rating Distribution</h2>
+        {% set max_count = rating_dist.values() | max %}
+        {% for i in [5, 4, 3, 2, 1] %}
+        <div class="dist-row">
+            <span class="dist-label">{{ i }}</span>
+            <div class="bar-fill-wrap" style="flex:1; max-width:300px">
+                <div class="bar-fill" style="width:{% if max_count > 0 %}{{ (rating_dist[i] / max_count * 100) | int }}{% else %}0{% endif %}%"></div>
+            </div>
+            <span class="dist-count">{{ rating_dist[i] }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% endif %}
+</body>
+</html>
